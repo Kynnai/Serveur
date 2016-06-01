@@ -2,6 +2,12 @@
 # -*- coding: utf-8 -*-
 from serveur.protocole import Protocole
 
+
 class ProtocoleJson(Protocole):
+
+
     def __init__(self):
+        pass
+
+    def interprete(self, message_client):
         pass

@@ -2,7 +2,37 @@
 # -*- coding: utf-8 -*-
 
 from serveur.protocole import Protocole
+import xmltodict
 
 class ProtocoleXml(Protocole):
+    PREFIXE_XML = "<?xml version=\"1.0\" ?>"
+
     def __init__(self):
         pass
+
+    def interprete(self, message_client):
+        interpreteur = xmltodict.parse(message_client[22:len(message_client)])
+        if ("bonjourServeur" in interpreteur):
+            return self.PREFIXE_XML + "<bonjourClient/>"
+        elif ("questionNomServeur" in interpreteur):
+            return self.PREFIXE_XML + "<nomServeur>Ubuntu Dropbox 1.0</nomServeur>"
+        elif ("questionListeDossiers" in interpreteur):
+            pass
+        elif ("questionListeFichiers" in interpreteur):
+            pass
+        elif ("creerDossier" in interpreteur):
+            pass
+        elif ("televerserFichier" in interpreteur):
+            pass
+        elif ("telechargerFichier" in interpreteur):
+            pass
+        elif ("supprimerFichier" in interpreteur):
+            pass
+        elif ("supprimerDossier" in interpreteur):
+            pass
+        elif ("questionFichierRecent" in interpreteur):
+            pass
+        elif ("questionFichierIdentique" in interpreteur):
+            pass
+        elif ("quitter" in interpreteur):
+            return self.PREFIXE_XML + "<bye/>"
