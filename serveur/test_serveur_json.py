@@ -30,6 +30,14 @@ class testjson_serveur_json(TestCase):
     def testjson_listeFichiers(self):
         self.assertTrue(self.protocole.interprete('{"questionListeFichiers": "d1"}'), json.dumps({"listeFichiers": {"fichier": ["d1/f1"]}}))
 
+    #IF
+    def testjson_listeFichiersMaisDossierInexistant(self):
+        self.assertTrue(self.protocole.interprete('{"questionListeFichiers": "d20"}'), json.dumps({"reponse": "erreurDossierInexistant"}))
+
+    #A REGARDER (IF)
+    def testjson_listeFichiersMaisDossierLecture(self):
+        self.assertTrue(self.protocole.interprete('{"questionListeFichiers": "d1"}'), json.dumps({"reponse": "erreurDossierLecture"}))
+
     def testjson_creerDossier(self):
         self.assertTrue(self.protocole.interprete('{"creerDossier": "d7/d8/d9"}'), json.dumps({"reponse": "ok"}))
 
@@ -67,9 +75,13 @@ class testjson_serveur_json(TestCase):
     def testjson_supprimerFichierMaisDossierInexistant(self):
         self.assertTrue(self.protocole.interprete(json.dumps({"supprimerFichier":{"nom": "f2", "dossier": "d21"}})), json.dumps({"reponse": "erreurDossierInexistant"}))
 
+    # IF
+    def testjson_supprimerFichierMaisFichierInexistant(self):
+        self.assertTrue( self.protocole.interprete(json.dumps({"supprimerFichier": {"nom": "allo", "dossier": "d1"}})), json.dumps({"reponse": "erreurFichierInexistant"}))
+
     #A regarder (IF)
     def testjson_supprimerFichierMaisFichierLecture(self):
-        self.assertTrue(self.protocole.interprete(json.dumps({"supprimerFichier":{"nom": "f2", "dossier": "d1"}}), json.dumps({"reponse": "erreurFichierLecture"}))
+        self.assertTrue(self.protocole.interprete(json.dumps({"supprimerFichier":{"nom": "f2", "dossier": "d1"}}), json.dumps({"reponse": "erreurFichierLecture"})))
 
     def testjson_supprimerDossier(self):
         self.assertTrue(self.protocole.interprete(json.dumps({"supprimerDossier": "d1/d2"})), json.dumps({"reponse": "ok"}))
