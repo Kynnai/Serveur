@@ -15,10 +15,10 @@ class TestProtocole_xml(TestCase):
         self.protocole = ProtocoleXml()
 
 
-    def test_bonjour(self):
+    def testXml_bonjour(self):
         self.assertTrue(self.protocole.interprete('<bonjourServeur />'), self.PREFIXE_XML + '<bonjourClient />')
 
-    def test_questionNomServeur(self):
+    def testXml_questionNomServeur(self):
         self.assertTrue(self.protocole.interprete('<questionNomServeur />'), self.PREFIXE_XML + '<nomServeur>Ubuntu Dropbox 1.0</nomServeur>')
 
     def testXml_listeDossier(self):
