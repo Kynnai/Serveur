@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from serveur.protocole import Protocole
-
+import json
 
 class ProtocoleJson(Protocole):
 
@@ -10,4 +10,34 @@ class ProtocoleJson(Protocole):
         pass
 
     def interprete(self, message_client):
+        interpreteur = json.loads(message_client)
+        if ("salutation" in interpreteur and interpreteur["salutation"] == "bonjourServeur"):
+            return json.dumps({"salutation": "bonjourClient"})
+        elif ("action" in interpreteur and interpreteur["action"] == "questionNomServeur"):
+            return json.dumps({"nomServeur":"Ubuntu Dropbox 1.0"})
+        elif ("questionListeDossiers" in interpreteur):
+            return self.findListeDossiers(interpreteur["questionListeDossiers"])
+        elif ("questionListeFichiers" in interpreteur):
+            return self.findListeFichiers(interpreteur["questionListeFichiers"])
+        elif ("creerDossier" in interpreteur):
+            pass
+        elif ("televerserFichier" in interpreteur):
+            pass
+        elif ("telechargerFichier" in interpreteur):
+            pass
+        elif ("supprimerFichier" in interpreteur):
+            pass
+        elif ("supprimerDossier" in interpreteur):
+            pass
+        elif ("questionFichierRecent" in interpreteur):
+            pass
+        elif ("questionFichierIdentique" in interpreteur):
+            pass
+        elif ("action" in interpreteur and interpreteur["action"] == "quitter"):
+            return json.dumps({"reponse": "bye"})
+
+    def findListeDossiers(self, dossier):
+        pass
+
+    def findListeFichiers(self, fichier):
         pass
