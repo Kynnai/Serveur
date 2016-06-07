@@ -24,6 +24,82 @@ class Serveur(threading.Thread , promt):
     def __init__(self, threadName, connection, protocole, port, prompt):
         threading.Thread.__init__(self, name = threadName)
         self.connection = connection
+        self.path = os.path.dirname(os.path.abspath(__file__))
+        self.protocole = protocole
+        self.serveur = Serveur(port)
+        self.interface = InterfaceUtilisateur()
+        if prompt:
+            self.communication()
+        else:
+            self.synchroniser(self.rep, "./")
+
+    def communication(self):
+        r = self.interface.lecteur()
+        while r[0] != "quitter":
+            envoie = None
+            message = "Commande invalide"
+            if r[0] == "connecter?":
+                envoie = self.protocole.genere_bonjour(self)
+            elif r[0] == "nomServeur?":
+                envoie = self.protocole.genere_nom(self)
+            elif r[0] == "listeDossier?":
+                if len(r) != 1:
+                    envoie = self.protocole.genere_listeDossiers(self, r[1])
+                else:
+                    envoie = self.protocole.genere_listeDossiers(self, "./")
+            elif len(r) != 1:
+                if r[0] == "dossier?":
+                    self.interface.retourMessageServeur(self.dossierExist(r[1]))
+                elif r[0] == "creerDossier?":
+                    envoie = self.protocole.genere_creerDossier(self, r[1])
+                elif r[0] == "televerser?":
+                    self.initialiserInformationComplexe(r[1])
+                    envoie = self.protocole.genere_televerserFichier(self, self.nom, self.dossier, self.signature,
+                                                                     self.contenu, self.date)
+                elif r[0] == "telecharger?":
+                    self.telecharger(r[1])
+                    self.interface.retourMessageServeur("OK")
+                elif r[0] == "supprimerDossier?":
+                    envoie = self.protocole.genere_supprimerDossier(self, r[1])
+                elif r[0] == "supprimerFichier?":
+                    self.initialiserInformationDeBase(r[1])
+                    envoie = self.protocole.genere_supprimerFichier(self, self.nom, self.dossier)
+                elif r[0] == "fichier?":
+                    self.initialiserInformationDeBase(r[1])
+                    envoie = self.protocole.genere_listeFichiers(self, self.dossier)
+                    if self.nom != self.dossier:
+                        self.serveur.send(envoie)
+                        message_serveur = self.serveur.receive()
+                        retourInterprete = (self.protocole.interprete(self, message_serveur)).split(" ")
+                        if self.nom in retourInterprete:
+                            self.interface.retourMessageServeur("oui")
+                        else:
+                            self.interface.retourMessageServeur("non")
+                elif r[0] == "identiqueFichier?" or r[0] == "fichierIdentique?" or r[0] == "telecharger?":
+                    self.initialiserInformationComplexe(r[1])
+                    envoie = self.protocole.genere_fichierIdentique(self, self.nom, self.dossier, self.signature,
+                                                                    self.date)
+                elif r[0] == "fichierRecent?":
+                    self.initialiserInformationComplexe(r[1])
+                    envoie = self.protocole.genere_fichierRecent(self, self.nom, self.dossier, self.date)
+                elif r[0] == "miseAjour":
+                    self.miseAjour(r[1])
+            elif r[0] == "quitter":
+                envoie = self.protocole.genere_quitter(self)
+            else:
+                message = "Élément manquant!"
+
+            if envoie != None and r[0] != "telecharger?" and r[0] != "miseAjour" and r[0] != "dossier?":
+                self.serveur.send(envoie)
+                message_serveur = self.serveur.receive()
+                self.interface.retourMessageServeur(self.protocole.interprete(self, message_serveur))
+            elif r[0] == "telecharger?" or r[0] == "fichier?" or r[0] == "miseAjour" or r[0] == "dossier?":
+                pass
+            else:
+                self.interface.retourMessageServeur(message)
+
+            r = input("Commande:").split(" ")
+        self.interface.retourMessageServeur("bye")
 
     def run(self):
         dom = parseString("<monMessage>Merci de vous connecter</monMessage>")

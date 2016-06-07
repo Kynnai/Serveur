@@ -11,7 +11,7 @@ class testjson_serveur_json(TestCase):
         self.protocole = ProtocoleJson()
 
     def testjson_bonjour(self):
-        self.assertTrue(self.protocole.interprete('{"salutation": "bonjourServeur"}'), json.dumps({"salutation": "bonjourClient"}))
+        self.assertTrue(self.protocole.interprete('{"salutation": "bonjourClient"}'), json.dumps({"salutation": "bonjourClient"}))
 
     def testjson_nomServeur(self):
         self.assertTrue(self.protocole.interprete('{"action": "questionNomServeur"}'), json.dumps({"nomServeur": "Ubuntu Dropbox 1.0"}))
