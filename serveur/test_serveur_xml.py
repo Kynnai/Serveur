@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+
 from unittest import TestCase
 from serveur.protocoleXml import ProtocoleXml
 
